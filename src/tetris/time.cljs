@@ -1,10 +1,13 @@
-(ns tetris.time)
+(ns tetris.time
+  (:require [tetris.state :as s]))
 
 (def state (atom {:time 0
                   :diff 0}))
 
-(def move-interval (atom 1000))
+(def move-base-interval 1000)
+(def move-increase 100)
 (def move (atom 0))
+(def move-quick-interval 19)
 
 (defn cur-time [] (:time @state))
 (defn diff-time [] (:diff @state))
@@ -16,4 +19,6 @@
   (let [n (now) t (cur-time)] (swap! state assoc :time n :diff (- t n))))
 
 (defn set-move [] (reset! move (now)))
-(defn check-move [] (< (+ @move @move-interval) (now)))
+(defn check-move []
+  (or (< (+ @move (- move-base-interval (* @s/level move-increase))) (now))
+      (and @s/quick-down-active (< (+ @move move-quick-interval) (now)))))

@@ -1,6 +1,7 @@
 (ns tetris.core
   (:require [tetris.canvas :as canvas]
-            [tetris.grid :as grid]
+            [tetris.sidebar :as sidebar]
+            [tetris.layout :as lo]
             [tetris.game :as game]
             [tetris.control :as control]))
 
@@ -8,13 +9,14 @@
   ([] (onload nil))
   ([ev]
    (canvas/init)
-   (grid/init)
+   (lo/resize)
    (control/init)
    (game/start)))
 
 (defn resize []
   (canvas/resize)
-  (grid/resize))
+  (lo/resize)
+  (sidebar/resize))
 
 (defn main []
   (.addEventListener js/window "DOMContentLoaded" onload)

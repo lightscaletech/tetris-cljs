@@ -2,21 +2,15 @@
   (:require [tetris.canvas :as can]
             [tetris.shapes :as shapes]
             [tetris.time :as time]
-            [tetris.control :as control]))
-
-(def width  10)
-(def height 20)
-(def padding 30)
-
-(def pos (atom {:x 0 :y 0 :w 0 :h 0}))
-(def square-size (atom 0))
-
-(def current-shape (atom nil))
-(def shapes (atom []))
+            [tetris.control :as control]
+            [tetris.layout :as lo]
+            [tetris.state
+             :refer [current-shape shapes square-size]
+             :as state]))
 
 (defn check-bottom []
   (>= (+ (shapes/height @current-shape) (:pos-y @current-shape))
-     height))
+     lo/grid-height))
 
 (defn any-kv [pred col]
   (let [len (count col)]
@@ -75,11 +69,76 @@
           false))
      @shapes)))
 
+(defn vec-remove
+  [coll pos]
+  (if (and (= (count coll) 1) (= pos 0))
+    []
+    (vec (concat (subvec coll 0 pos)
+                 (when (< pos (-> coll count dec)) (subvec coll (inc pos)))))))
+
+(defn move-down-from-line [l lines]
+  (let [scount (count @shapes)]
+    (loop [i 0]
+      (let [s (get @shapes i)]
+        (when (and (<= (:pos-y s) l)
+                   (<= (+ (:pos-y s) (shapes/height s)) lo/grid-height))
+          (swap! shapes assoc-in [i :pos-y]
+                 (-> @shapes (get i) :pos-y (+ lines)))))
+      (when (< i scount)
+        (recur (inc i))))))
+
+(defn remove-shape-rows [shp]
+  (let [s (:shape shp)
+        r (:row shp)
+        ts (get @shapes s)]
+    (swap! shapes #(assoc-in % [s :cords] (-> ts :cords (vec-remove r))))))
+
+(defn find-empty-shapes []
+  (reduce-kv #(if (-> %3 :cords count zero?)
+                (conj %1 %2))
+             '() @shapes))
+
+(defn remove-empty-shapes []
+  (doseq [s (find-empty-shapes)] (swap! shapes vec-remove s)))
+
+(defn find-line-rows [between]
+  (reduce
+   (fn [c l]
+     (let [shps (reduce-kv
+                 #(let [py (:pos-y %3) rowi (- l py)]
+                    (if (and (<= py l)
+                             (>= (+ py (shapes/height %3)) l))
+                      (conj %1 {:shape %2 :row rowi
+                                :squares (->> rowi (get (:cords %3))
+                                              (remove zero?) count)})
+                      %1))
+                 [] @shapes)]
+       (if (= (reduce #(-> %2 :squares (+ %1)) 0 shps) lo/grid-width)
+         (assoc c
+                :shapes (into (:shapes c) shps)
+                :line l
+                :lines (inc (:lines c)))
+         c)))
+   {:shapes [] :line 0 :lines 0} between))
+
+(defn check-for-lines [sy ey]
+  (let [{:keys [shapes line lines]} (find-line-rows (range sy (inc ey)))]
+    (when (-> shapes count pos?)
+      (doseq [s (reverse shapes)] (remove-shape-rows s))
+      (move-down-from-line line lines)
+      (remove-empty-shapes)
+      (state/add-lines lines))))
+
 (defn place []
   (if (or (check-bottom)
           (check-collision 0 1))
     (do (swap! shapes conj @current-shape)
+        (check-for-lines (:pos-y @current-shape)
+                         (+ (:pos-y @current-shape)
+                            (-> @current-shape shapes/height dec)))
+        (when (-> @current-shape :pos-y (<= 0)) (state/gameover))
         (reset! current-shape nil)
+        (reset! state/quick-down-active false)
         true)
     false))
 
@@ -89,41 +148,36 @@
     (swap! current-shape #(assoc-in % [:pos-x] (-> % :pos-x dec)))))
 
 (defn move-shape-right []
-  (when (and (< (:pos-x @current-shape) (- width (shapes/width @current-shape)))
+  (when (and (< (:pos-x @current-shape)
+                (- lo/grid-width (shapes/width @current-shape)))
              (not (check-collision 1 0)))
     (swap! current-shape #(assoc-in % [:pos-x] (-> % :pos-x inc)))))
 
 (defn move-shape-down []
-  (when-not (place) (swap! current-shape #(assoc-in % [:pos-y] (-> % :pos-y inc)))))
+  (when-not (place)
+    (swap! current-shape #(assoc-in % [:pos-y] (-> % :pos-y inc)))
+    (time/set-move)))
 
 (defn rotate-shape []
   (shapes/rotate current-shape)
-  (when (> (+ (:pos-x @current-shape) (shapes/width @current-shape)) width)
+  (when (> (+ (:pos-x @current-shape) (shapes/width @current-shape))
+           lo/grid-width)
     (swap! current-shape
-           #(assoc-in % [:pos-x] (- width (shapes/width @current-shape))))))
+           #(assoc-in % [:pos-x] (- lo/grid-width (shapes/width @current-shape))))))
 
-(defn move-current-shape []
-  (when (time/check-move)
-    (move-shape-down)
-    (time/set-move)))
+(defn move-current-shape [] (when (time/check-move) (move-shape-down)))
 
-(defn make-shape [shape]
-  (assoc shape
-         :opposite false
-         :flip-x false
-         :flip-y false
-         :pos-x (- (/ width 2)
-                   (.round js/Math (-> shape :cords first count (/ 2))))
-         :pos-y (-> shape :cords count - (+ 1))))
+(defn quick-down [] (reset! state/quick-down-active true))
 
 (defn create-shape []
-  (reset! current-shape (make-shape (shapes/pick-shape)))
+  (state/load-shape lo/grid-width)
   (time/set-move))
 
 (def control-left   (atom false))
 (def control-right  (atom false))
 (def control-down   (atom false))
 (def control-rotate (atom false))
+(def control-quick-down (atom false))
 
 (defn control-toggling [con done fun]
   (when (and @con (not @done)) (fun) (reset! done true))
@@ -133,11 +187,12 @@
   (control-toggling control/left-active  control-left   move-shape-left)
   (control-toggling control/right-active control-right  move-shape-right)
   (control-toggling control/down-active  control-down   move-shape-down)
-  (control-toggling control/up-active    control-rotate rotate-shape))
+  (control-toggling control/up-active    control-rotate rotate-shape)
+  (control-toggling control/space-active control-quick-down quick-down))
 
 (defn render-shape [shape]
   (let [cords (:cords shape)
-        gx (:x @pos) gy (:y @pos)
+        gx (lo/cgrid-x) gy (lo/cgrid-y)
         sx (* (:pos-x shape) @square-size)
         sy (* (:pos-y shape) @square-size)]
     (doseq [[r cols] (map-indexed vector cords)]
@@ -153,25 +208,10 @@
   (doseq [s @shapes] (render-shape s)))
 
 (defn render []
-  (let [{:keys [x y w h]} @pos]
-    (can/draw-rectangle x y w h "#999"))
+  (can/draw-rectangle (lo/cgrid-x) (lo/cgrid-y) (lo/cgrid-w) (lo/cgrid-h) "#999")
   (if @current-shape
     (do (move-current-shape)
         (render-shape @current-shape)
         (control-shape))
     (create-shape))
   (render-all-shapes))
-
-(defn resize []
-  (let [{cw :w ch :h} (can/gsize)
-        hp (- ch (* padding 2))
-        wp (- cw (* padding 2))
-        sq (/ hp height)
-        cw (* sq width)]
-    (if (> wp cw)
-      (do (reset! pos {:x padding :y padding :w cw :h hp})
-          (reset! square-size sq))
-      (do (reset! pos {:x padding :y padding :w wp :h (* (/ wp width) height)})
-          (reset! square-size (/ wp width))))))
-
-(defn init [] (resize))

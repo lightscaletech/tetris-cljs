@@ -40,3 +40,17 @@
   (set! (.-fillStyle (api)) c)
   (.fillRect (api) x y w h)
   (restore))
+
+(defn draw-stroke-rectangle [x y w h c s]
+  (save)
+  (set! (.-strokeStyle (api)) c)
+  (set! (.-lineWidth (api)) s)
+  (.strokeRect (api) x y w h)
+  (restore))
+
+(defn draw-text [text s x y c]
+  (save)
+  (set! (.-font (api)) (str s "px arial"))
+  (set! (.-fillStyle (api)) c)
+  (.fillText (api) text x (- y (/ s 2)))
+  (restore))
