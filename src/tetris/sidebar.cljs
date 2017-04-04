@@ -2,7 +2,8 @@
   (:require [tetris.layout :as lo]
    [tetris.canvas :as canvas]
             [tetris.state :refer [square-size] :as state]
-            [tetris.shapes :as shapes]))
+            [tetris.shapes :as shapes]
+            [tetris.widgets :as w]))
 
 (def pos-y (atom 0))
 (def space 1)
@@ -67,14 +68,18 @@
     (render-shape gx gy @state/next-shape)
     (add-pos-y next-shape-height)))
 
+(def pause-btn  (w/make-button {:x lo/sidebar-x :y 14 :w lo/sidebar-width :h 1
+                                  :text "Pause" :cb #(.log js/console "Test")}))
+
 (defn render []
   (reset-pos-y)
   (render-heading "NEXT")
   (render-next-shape)
-  (add-space-y)
+  (add-pos-y 0.5)
   (render-heading "SCORE")
   (render-data @state/score)
   (render-heading "LINES")
   (render-data @state/lines)
   (render-heading "LEVEL")
-  (render-data @state/level))
+  (render-data @state/level)
+  ((:ren pause-btn)))
