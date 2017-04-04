@@ -16,14 +16,16 @@
 (defn cgrid-w [] (* grid-width @ssize))
 (defn cgrid-h [] (* grid-height @ssize))
 
-(def sidebar-x (+ grid-width (* grid-padding 2)))
-(def sidebar-width 5)
+(def sidebar-mult 1)
+(def sidebar-x (+ grid-padding grid-width (* grid-padding 0.5)))
+(def sidebar-width 3.25)
 
-(defn csidebar-width [] (* sidebar-width @ssize))
+(defn csidebar-ss [] (* @ssize sidebar-mult))
+(defn csidebar-width [] (* sidebar-width (csidebar-ss)))
 (defn csidebar-x [] (* sidebar-x @ssize))
 (defn csidebar-y [] (* grid-padding @ssize))
 
-(def width (+ space grid-width space sidebar-width space))
+(def width (+ space grid-width (* space 0.5) sidebar-width space))
 (def height (+ space grid-height space))
 
 (def dialog-padding (* space 1))
@@ -37,7 +39,7 @@
 
 (defn resize []
   (let [{cw :w ch :h} (can/gsize)
-        sq (.floor js/Math
+        sq (.ceil js/Math
                    (if (> (* (/ ch height) width) cw)
                      (/ cw width) (/ ch height)))]
     (reset! ssize sq)))

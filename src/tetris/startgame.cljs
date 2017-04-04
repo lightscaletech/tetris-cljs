@@ -7,9 +7,9 @@
 (def focus (atom nil))
 (def widgets
   {:title (widg/make-text-line
-           {:x 5.5 :y 8 :size 1.8 :text "CLOJOZ"})
+           {:x 4.4 :y 8 :size 1.8 :text "CLOJOZ"})
    :startbtn (widg/make-button
-                {:x 6.4 :y 12 :w 5.1 :h 1 :text "START GAME"
+                {:x 5.3 :y 12 :w 5.1 :h 1 :text "START GAME"
                  :cb #(state/start-game)})})
 
 (defn render []

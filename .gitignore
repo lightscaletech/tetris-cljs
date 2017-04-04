@@ -1,1 +1,2 @@
-target/*
+target-prod/*
+target-dev/*

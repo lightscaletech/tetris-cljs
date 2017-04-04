@@ -15,5 +15,16 @@
         (speak)
         (reload :on-jsload 'tetris.core/onload)
         (cljs :source-map true)
-        (serve :port 8080)
-        (target )))
+        (serve :port 8080 :dir "target-dev")
+        (target :dir #{"target-dev"})))
+
+(deftask prod []
+  (comp (cljs :optimizations :advanced
+              :output-dir "../main-out")
+        (target :dir #{"target-prod"})))
+
+(deftask prod-dev []
+  (comp (watch)
+        (speak)
+        (serve :port 8080 :dir "target-prod")
+        (prod)))

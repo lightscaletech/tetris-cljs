@@ -18,6 +18,7 @@
   (lo/resize)
   (sidebar/resize))
 
-(defn main []
+(defn ^:export main []
+  (.scrollTo js/window 0 1)
   (.addEventListener js/window "DOMContentLoaded" onload)
   (.addEventListener js/window "resize" resize true))

@@ -4,8 +4,6 @@
 (def state (atom {:time 0
                   :diff 0}))
 
-(def move-base-interval 1000)
-(def move-increase 100)
 (def move (atom 0))
 (def move-quick-interval 19)
 
@@ -20,5 +18,5 @@
 
 (defn set-move [] (reset! move (now)))
 (defn check-move []
-  (or (< (+ @move (- move-base-interval (* @s/level move-increase))) (now))
+  (or (< (+ @move @s/down-speed) (now))
       (and @s/quick-down-active (< (+ @move move-quick-interval) (now)))))
