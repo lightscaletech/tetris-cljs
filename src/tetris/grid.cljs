@@ -163,17 +163,18 @@
     (time/set-move)))
 
 (defn rotate-shape []
-  (let [ns (tshape/rotate @current-shape)]
+  (let [ns (tshape/rotate @current-shape)
+        nsw (tshape/width ns)]
     (if (check-collision ns 0 0)
       (if (check-collision ns -1 0)
         (reset! current-shape (assoc ns :pos-x (+ (:pos-x ns) -1)))
         (when-not (check-collision ns 1 0)
           (reset! current-shape (assoc ns :pos-x (+ (:pos-x ns) 1)))))
-      (reset! current-shape ns)))
-  (when (> (+ (:pos-x @current-shape) (tshape/width @current-shape))
-           lo/grid-width)
-    (swap! current-shape
-           #(assoc-in % [:pos-x] (- lo/grid-width (tshape/width @current-shape))))))
+      (if (< (:pos-x ns) 0)
+        (reset! current-shape (assoc ns :pos-x 0))
+        (if (> (+ nsw (:pos-x ns)) lo/grid-width)
+          (reset! current-shape (assoc ns :pos-x (- lo/grid-width nsw)))
+          (reset! current-shape ns))))))
 
 (defn move-current-shape [] (when (time/check-move) (move-shape-down)))
 
