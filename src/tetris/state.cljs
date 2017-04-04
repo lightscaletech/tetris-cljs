@@ -40,7 +40,7 @@
 (defn level-up []
   (when (>= @lines (* @level level-gap))
     (swap! level inc)
-    (swap! down-speed #(* % (/ (- 100 (+ @level speed-increase)) 100)))))
+    (swap! down-speed * (/ (- 100 speed-increase) 100))))
 
 (defn add-lines [l]
   (swap! lines + l)
