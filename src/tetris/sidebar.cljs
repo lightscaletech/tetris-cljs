@@ -69,7 +69,7 @@
     (add-pos-y next-shape-height)))
 
 (def pause-btn  (w/make-button {:x lo/sidebar-x :y 14 :w lo/sidebar-width :h 1
-                                  :text "Pause" :cb #(.log js/console "Test")}))
+                                  :text "Pause" :cb state/pause}))
 
 (defn render []
   (reset-pos-y)

@@ -255,8 +255,9 @@
 (defn render []
   (can/draw-rectangle (lo/cgrid-x) (lo/cgrid-y) (lo/cgrid-w) (lo/cgrid-h) "#999")
   (if @current-shape
-    (do (move-current-shape)
-        (render-shape @current-shape)
-        (control-shape))
+    (do (when (not @state/paused)
+          (move-current-shape)
+          (control-shape))
+        (render-shape @current-shape))
     (create-shape))
   (render-all-shapes))

@@ -3,6 +3,7 @@
             [tetris.control :as control]))
 
 (def game-state (atom nil))
+(def paused (atom nil))
 
 (def square-size (atom 0))
 
@@ -66,3 +67,6 @@
 (defn start-game [] (set-game-state :game))
 (defn gameover [] (set-game-state :gameover))
 (defn restart [] (reset-game))
+
+(defn pause [] (reset! paused true))
+(defn unpause [] (reset! paused false))
