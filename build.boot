@@ -2,6 +2,8 @@
  :source-paths #{"src"}
  :resource-paths #{"resources"}
  :dependencies '[[adzerk/boot-cljs "2.0.0"]
+                 [org.clojure/clojure "1.8.0"]
+                 [org.clojure/clojurescript "1.9.495"]
                  [adzerk/boot-reload "0.5.1"]
                  [org.clojure/tools.nrepl "0.2.12"]
                  [pandeiro/boot-http "0.7.6"]])
@@ -13,7 +15,7 @@
 (deftask dev []
   (comp (watch)
         (speak)
-        (reload :on-jsload 'tetris.core/onload)
+        (reload :on-jsload 'tetris.core/main)
         (cljs :source-map true)
         (serve :port 8080 :dir "target-dev")
         (target :dir #{"target-dev"})))
