@@ -18,9 +18,9 @@
 
 (def mouse-down-pos (atom nil))
 (defn mouse-over [w pos]
-  (let [wxl (-> w :x real-point)
+  (let [wxl (-> w :x real-point (+ @state/game-x))
         wxr (-> w :w real-point (+ wxl))
-        wyt (-> w :y dec real-point)
+        wyt (-> w :y dec real-point (+ @state/game-y))
         wyb (-> w :h real-point (+ wyt))
         {mx :x my :y} pos]
     (and (>= mx wxl) (<= mx wxr)
@@ -34,8 +34,8 @@
   (when @control/mouse-click-down (reset! mouse-down-pos @control/mouse-pos)))
 
 (defn button-render [w state]
-  (let [x (-> w :x real-point)
-        y (-> w :y dec real-point)
+  (let [x (-> w :x real-point (+ @state/game-x))
+        y (-> w :y dec real-point (+ @state/game-y))
         wi (-> w :w real-point)
         h (-> w :h real-point)
         bgc (:bg-color w)
@@ -48,7 +48,7 @@
     (canvas/draw-rectangle x y wi h bgc)
     (canvas/draw-text
      (:text w) (-> w :size real-point)
-     (-> w :x (+ 0.6) real-point) (-> w :y real-point) (:fg-color w))))
+     (+ x (real-point 0.6)) (+ y @state/square-size) (:fg-color w))))
 
 (defn make-button [attrs]
   (make-widg button-render
@@ -59,7 +59,8 @@
 (defn text-line-render [w state]
   (canvas/draw-text
    ((if (:atom w) deref str) (:text w)) (-> w :size real-point)
-   (-> w :x real-point) (-> w :y real-point) (:color w)))
+   (-> w :x real-point (+ @state/game-x)) (-> w :y real-point (+ @state/game-y))
+   (:color w)))
 
 (defn make-text-line [attrs]
   (make-widg text-line-render

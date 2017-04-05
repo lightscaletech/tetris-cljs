@@ -5,14 +5,16 @@
             [tetris.grid :as grid]
             [tetris.sidebar :as sidebar]
             [tetris.gameover :as gameover]
-            [tetris.startgame :as startgame]))
+            [tetris.startgame :as startgame]
+            [tetris.pause-modal :as pause]))
 
 (declare frame)
 (defn frame-loop [] (.requestAnimationFrame js/window frame))
 
 (defn render-game []
   (grid/render)
-  (sidebar/render))
+  (sidebar/render)
+  (pause/render))
 
 (defn frame []
   (canvas/clear)
@@ -28,5 +30,6 @@
   (frame-loop))
 
 (defn start []
-  (state/reset-game)
+  (pause/init)
+  (state/startscreen)
   (frame-loop))

@@ -9,8 +9,8 @@
   {:title (widg/make-text-line
            {:x 4.4 :y 8 :size 1.8 :text "CLOJOZ"})
    :startbtn (widg/make-button
-                {:x 5.3 :y 12 :w 5.1 :h 1 :text "START GAME"
-                 :cb #(state/start-game)})})
+              {:x 5.3 :y 12 :w 5.1 :h 1 :text "START GAME"
+               :cb #(state/start-game)})})
 
 (defn render []
   (can/draw-rectangle

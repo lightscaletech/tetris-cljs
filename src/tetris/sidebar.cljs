@@ -42,11 +42,11 @@
     (render-text-block t data-fg-color data-bg-color))
 
 (defn render-shape [gx gy shape]
-  (let [ss (* (lo/csidebar-ss) sss)
+  (let [ss (.ceil js/Math (+ (* (lo/csidebar-ss) sss)))
         sw (shapes/width shape)
         sh (shapes/height shape)
         sx (+ gx (* ss
-                    (.floor js/Math
+                    (.round js/Math
                             (- (/ mini-grid-w 2) (/ (shapes/width shape) 2)))))
         sy (+ gy (* ss
                     (.round js/Math
@@ -56,7 +56,7 @@
         (when (pos? v)
           (canvas/draw-rectangle
            (+ sx (* ss c)) (+ sy (* ss r))
-           ss ss
+           (+ 1 ss) (+ 1 ss)
            (:color shape)))))))
 
 (defn render-next-shape []
@@ -82,4 +82,5 @@
   (render-data @state/lines)
   (render-heading "LEVEL")
   (render-data @state/level)
-  ((:ren pause-btn)))
+  (when (not @state/paused)
+    ((:ren pause-btn))))

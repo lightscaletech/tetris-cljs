@@ -6,6 +6,8 @@
 (def paused (atom nil))
 
 (def square-size (atom 0))
+(def game-x (atom 0))
+(def game-y (atom 0))
 
 (def shapes (atom []))
 (def ns-control-block (atom false))
@@ -55,7 +57,7 @@
 (defn set-game-state [s] (reset! game-state s))
 
 (defn reset-game []
-  (set-game-state :start)
+  (reset! paused false)
   (reset! down-speed 900)
   (reset! score 0)
   (reset! lines 0)
@@ -67,6 +69,9 @@
 (defn start-game [] (set-game-state :game))
 (defn gameover [] (set-game-state :gameover))
 (defn restart [] (reset-game))
+(defn startscreen []
+  (set-game-state :start)
+  (reset-game))
 
 (defn pause [] (reset! paused true))
 (defn unpause [] (reset! paused false))

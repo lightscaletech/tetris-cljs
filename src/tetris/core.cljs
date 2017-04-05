@@ -5,20 +5,14 @@
             [tetris.game :as game]
             [tetris.control :as control]))
 
-(defn onload
-  ([] (onload nil))
-  ([ev]
-   (canvas/init)
-   (lo/resize)
-   (control/init)
-   (game/start)))
-
 (defn resize []
   (canvas/resize)
   (lo/resize)
   (sidebar/resize))
 
 (defn ^:export main []
-  (.scrollTo js/window 0 1)
-  (.addEventListener js/window "DOMContentLoaded" onload)
-  (.addEventListener js/window "resize" resize true))
+  (.addEventListener js/window "resize" resize true)
+  (canvas/init)
+  (lo/resize)
+  (control/init)
+  (game/start))

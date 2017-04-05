@@ -26,7 +26,7 @@
            {:x 7 :y 10 :size 0.9 :atom true :text state/level})
    :btnrestart (widg/make-button
                 {:x 6 :y 12 :w 4 :h 1 :text "RESTART"
-                 :cb #(state/restart)})})
+                 :cb state/startscreen})})
 
 (defn render []
   (can/draw-rectangle
