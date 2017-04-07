@@ -16,7 +16,7 @@
   (comp (watch)
         (speak)
         (reload :on-jsload 'tetris.core/main)
-        (cljs :source-map true)
+        (cljs)
         (serve :port 8080 :dir "target-dev")
         (target :dir #{"target-dev"})))
 
