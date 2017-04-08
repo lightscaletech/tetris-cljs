@@ -1,4 +1,4 @@
-(ns tetris.countdown
+(ns tetris.grid.countdown
   (:require [tetris.time :as time]
             [tetris.canvas :as can]
             [tetris.layout :as lo]))

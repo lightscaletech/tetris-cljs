@@ -5,7 +5,7 @@
             [tetris.state
              :refer [current-shape shapes square-size]
              :as state]
-            [tetris.countdown :as countdown]
+            [tetris.grid.countdown :as countdown]
             [tetris.grid.control :as control]
             [tetris.grid.collision :as collis]))
 
