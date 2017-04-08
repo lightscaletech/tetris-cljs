@@ -1,7 +1,7 @@
 (ns tetris.widgets
   (:require [tetris.canvas :as canvas]
             [tetris.state :as state]
-            [tetris.control :as control]))
+            [tetris.input :as input]))
 
 (def btn-fg-color "#000")
 (def btn-bg-color "#EEE")
@@ -27,11 +27,11 @@
          (>= my wyt) (<= my wyb))))
 
 (defn mouse-click [w]
-  (when (and (not @control/mouse-click-down)
+  (when (and (not @input/mouse-click-down)
              (mouse-over w @mouse-down-pos))
     (reset! mouse-down-pos nil)
     ((:cb w)))
-  (when @control/mouse-click-down (reset! mouse-down-pos @control/mouse-pos)))
+  (when @input/mouse-click-down (reset! mouse-down-pos @input/mouse-pos)))
 
 (defn button-render [w state]
   (let [x (-> w :x real-point (+ @state/game-x))
@@ -40,7 +40,7 @@
         h (-> w :h real-point)
         bgc (:bg-color w)
         sp 2]
-    (when (mouse-over w @control/mouse-pos)
+    (when (mouse-over w @input/mouse-pos)
       (canvas/draw-stroke-rectangle
        (- x (+ sp (/ sp 2))) (- y (+ sp (/ sp 2)))
        (+ wi (* sp 2) sp) (+ h (* sp 2) sp) bgc sp)
