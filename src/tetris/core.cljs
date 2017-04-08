@@ -3,7 +3,7 @@
             [tetris.sidebar :as sidebar]
             [tetris.layout :as lo]
             [tetris.game :as game]
-            [tetris.control :as control]))
+            [tetris.input :as input]))
 
 (defn resize []
   (canvas/resize)
@@ -14,5 +14,5 @@
   (.addEventListener js/window "resize" resize true)
   (canvas/init)
   (lo/resize)
-  (control/init)
+  (input/init)
   (game/start))
