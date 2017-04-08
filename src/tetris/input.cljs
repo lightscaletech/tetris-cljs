@@ -1,4 +1,4 @@
-(ns tetris.control)
+(ns tetris.input)
 
 (def up-active    (atom false))
 (def down-active  (atom false))
