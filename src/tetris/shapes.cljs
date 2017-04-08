@@ -80,6 +80,10 @@
              (conj res (rotate-row-loop cords c rows ops)))
       res)))
 
+(def left!  #(assoc-in % [:pos-x] (-> % :pos-x dec)))
+(def right! #(assoc-in % [:pos-x] (-> % :pos-x inc)))
+(def down!  #(assoc-in % [:pos-y] (-> % :pos-y inc)))
+
 (defn rotate [shape]
   (let [ops (:opposite shape)
         rot ((:rot shape :0) rotation)
