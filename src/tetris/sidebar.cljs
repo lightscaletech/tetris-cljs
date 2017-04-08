@@ -1,9 +1,10 @@
 (ns tetris.sidebar
   (:require [tetris.layout :as lo]
    [tetris.canvas :as canvas]
-            [tetris.state :refer [square-size] :as state]
-            [tetris.shapes :as shapes]
-            [tetris.widgets :as w]))
+   [tetris.state :refer [square-size] :as state]
+   [tetris.shapes :as shapes]
+   [tetris.widgets :as w]
+   [tetris.highscore :as highscore]))
 
 (def pos-y (atom 0))
 (def space 1)
@@ -68,7 +69,7 @@
     (render-shape gx gy @state/next-shape)
     (add-pos-y next-shape-height)))
 
-(def pause-btn  (w/make-button {:x lo/sidebar-x :y 14 :w lo/sidebar-width :h 1
+(def pause-btn  (w/make-button {:x lo/sidebar-x :y 21 :w lo/sidebar-width :h 1
                                   :text "Pause" :cb state/pause}))
 
 (defn render []
@@ -76,6 +77,8 @@
   (render-heading "NEXT")
   (render-next-shape)
   (add-pos-y 0.5)
+  (render-heading "HI SCORE")
+  (render-data @highscore/highscore)
   (render-heading "SCORE")
   (render-data @state/score)
   (render-heading "LINES")
