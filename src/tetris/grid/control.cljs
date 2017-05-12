@@ -4,6 +4,7 @@
             [tetris.shapes :as shape]
             [tetris.layout :as lo]
             [tetris.time :as time]
+            [tetris.grid.gameover :as go]
             [tetris.grid.collision :as collis]
             [tetris.grid.lines :as lines]))
 
@@ -30,7 +31,7 @@
 (defn place-shape! []
   (swap! shapes conj @current-shape)
   (lines/clear!)
-  (when (-> @current-shape :pos-y (<= 0)) (state/gameover))
+  (when (-> @current-shape :pos-y (<= 0)) (go/gameover!))
   (reset! current-shape nil)
   (reset! state/quick-down-active false)
   (state/add-shape))

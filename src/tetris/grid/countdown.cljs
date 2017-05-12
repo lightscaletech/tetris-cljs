@@ -1,5 +1,6 @@
 (ns tetris.grid.countdown
   (:require [tetris.time :as time]
+            [tetris.state :as s]
             [tetris.canvas :as can]
             [tetris.layout :as lo]))
 
@@ -24,6 +25,7 @@
 (def current (atom nil))
 
 (defn init []
+  (s/load-shape lo/grid-width)
   (reset! change-time (time/now))
   (reset! current 3))
 
