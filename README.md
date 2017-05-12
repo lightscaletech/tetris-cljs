@@ -2,7 +2,7 @@
 CLJS HTML Canvas implementation of Tertris.
 
 ## Description
-This is a basic implementaion of tetris written in clojurescript. You can play
+This is a basic implementation of tetris written in clojurescript. You can play
 the build of this [here][lightscale-tetris].
 
 ## Usage
