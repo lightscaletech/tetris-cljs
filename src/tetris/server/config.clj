@@ -16,5 +16,6 @@
 
 (defn subc [& ks] (get-in @-config ks))
 
-(def web (partial subc :web))
-(def db  (partial subc :db))
+(def web  (partial subc :web))
+(def db   (partial subc :db))
+(def sign (partial subc :sign))
