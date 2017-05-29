@@ -1,0 +1,11 @@
+{:web {:port 8081
+       :document-root "./target-dev/"
+       :default-file "index.html"}
+
+ :db {:dbtype "mysql"
+      :dbname "tetris_cljs"
+      :host "localhost"
+      :user "tetris_cljs"
+      :password "testris_cljs"}
+
+ :sign {:secret "Mkd!3vd?dsPm06Ji6Y"}}
