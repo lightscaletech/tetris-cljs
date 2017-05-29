@@ -15,7 +15,8 @@
                  [org.clojure/tools.cli "0.3.5"]
                  [com.taoensso/timbre "4.10.0"]
                  [http-kit "2.2.0"]
-                 [buddy/buddy-sign "1.5.0"]])
+                 [buddy/buddy-sign "1.5.0"]
+                 [clj-time "0.13.0"]])
 
 (require '[adzerk.boot-cljs   :refer [cljs]]
          '[adzerk.boot-reload :refer [reload]]
