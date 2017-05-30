@@ -13,6 +13,7 @@
                  [org.clojure/clojure "1.8.0"]
                  [org.clojure/tools.nrepl "0.2.12"]
                  [org.clojure/tools.cli "0.3.5"]
+                 [org.clojure/data.json "0.2.6"]
                  [com.taoensso/timbre "4.10.0"]
                  [http-kit "2.2.0"]
                  [buddy/buddy-sign "1.5.0"]
